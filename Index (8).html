@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aman Shaikh — Attack and Defense</title>
+<meta name="description" content="Aman Shaikh, SOC Analyst L1 growing toward VAPT and red teaming. Splunk, QRadar, ELK, OWASP, 108 documented labs.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03040a;--ink:#eaf0ff;--dim:#8f9bc4;--ln:rgba(120,150,255,.16);--b:#3b6bff;--c:#22e3ff;--v:#8b5cf6;--r:#ff4d6d}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.65 'Instrument Sans',system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3,.d{font-family:'Sora',system-ui,sans-serif;letter-spacing:-.025em}a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--c);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 14px;z-index:99}.skip:focus{left:8px}
+.w{max-width:1120px;margin:0 auto;padding:0 24px}
+#pg{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--b),var(--c),var(--v));z-index:60}
+nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:4px;align-items:center;padding:6px 8px 6px 18px;background:rgba(10,14,34,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--ln);border-radius:99px;max-width:calc(100% - 20px)}
+nav b{font:700 .92rem Sora;margin-right:8px;white-space:nowrap}nav a.l{font-size:.84rem;color:var(--dim);padding:7px 11px;border-radius:99px}nav a.l:hover{color:var(--ink)}
+.btn{display:inline-flex;gap:8px;align-items:center;font:600 .88rem Sora;padding:12px 22px;border-radius:99px;border:1px solid var(--ln);color:var(--ink);background:none;cursor:pointer;transition:.2s}
+.btn.p{background:linear-gradient(120deg,var(--b),var(--v));border-color:transparent;box-shadow:0 8px 30px -8px rgba(90,100,255,.8)}.btn:hover{transform:translateY(-2px)}nav .btn{padding:8px 16px;font-size:.8rem}
+.hero{position:relative;min-height:100svh;display:grid;align-items:center;padding:110px 0 60px;overflow:hidden}
+#map{position:absolute;inset:0;width:100%;height:100%}
+.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 65% 60% at 28% 50%,rgba(3,4,10,.85),transparent 75%),linear-gradient(transparent 75%,var(--bg));pointer-events:none}
+.hero .w{position:relative;z-index:2}
+.st{display:inline-flex;gap:10px;align-items:center;font-size:.82rem;color:var(--dim);padding:7px 14px;border:1px solid var(--ln);border-radius:99px;background:rgba(10,14,34,.5)}
+.st i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c);animation:pl 2s infinite}@keyframes pl{50%{opacity:.3}}
+h1{font-size:clamp(3.2rem,12vw,9rem);line-height:.92;font-weight:800;margin:24px 0 18px}
+h1 span{background:linear-gradient(100deg,#fff 25%,#9fb4ff 60%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;opacity:0;transform:translateY(50px);animation:up 1s cubic-bezier(.2,.8,.2,1) forwards}@keyframes up{to{opacity:1;transform:none}}
+.rot{font:700 clamp(1.1rem,3vw,1.9rem) Sora;height:1.4em;overflow:hidden;position:relative;color:var(--c)}
+.rot span{position:absolute;left:0;opacity:0;transform:translateY(100%);transition:.6s cubic-bezier(.2,.8,.2,1)}.rot span.on{opacity:1;transform:none}.rot span.off{opacity:0;transform:translateY(-100%)}
+.lede{color:var(--dim);max-width:46ch;margin-top:14px}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.mode{position:absolute;right:24px;bottom:24px;z-index:3;display:flex;gap:8px;font-size:.8rem;color:var(--dim);align-items:center}
+.mode button{font:600 .8rem Sora;padding:8px 14px;border-radius:99px;border:1px solid var(--ln);background:rgba(10,14,34,.6);color:var(--ink);cursor:pointer}
+.mode button[aria-pressed=true]{border-color:var(--c);color:var(--c)}
+section{position:relative;padding:120px 0}
+.k{font-size:.85rem;color:var(--c);margin-bottom:10px}h2{font-size:clamp(2rem,5vw,3.6rem);line-height:1.05;font-weight:700;max-width:19ch;margin-bottom:16px}
+.sub{color:var(--dim);max-width:56ch;margin-bottom:44px}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}.rv.in{opacity:1;transform:none}
+/* journey */
+#journey{height:520vh;padding:0}.jin{position:sticky;top:0;height:100svh;display:grid;align-items:center;overflow:hidden}
+.jgrid{display:grid;grid-template-columns:90px 1fr;gap:30px;align-items:center}
+.rail{position:relative;height:60vh;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.rail:before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--ln)}.rail .f{position:absolute;top:0;width:2px;background:linear-gradient(var(--b),var(--c));box-shadow:0 0 14px var(--c);height:0}
+.rail i{position:relative;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--ln);transition:.4s}.rail i.on{border-color:var(--c);box-shadow:0 0 16px var(--c);background:var(--c)}
+.stage{position:relative;min-height:56vh}.sg{position:absolute;inset:0;opacity:0;transform:translateY(40px) scale(.98);transition:.8s cubic-bezier(.2,.8,.2,1);pointer-events:none}.sg.on{opacity:1;transform:none;pointer-events:auto}
+.sg small{color:var(--c);font-size:.88rem}.sg h3{font-size:clamp(2.6rem,8vw,6rem);line-height:1;font-weight:800;margin:8px 0 18px}.sg p{color:var(--dim);max-width:50ch;font-size:1.05rem}
+.sg.fut h3{background:linear-gradient(100deg,var(--c),var(--v));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* ops */
+.ops{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.pn{border:1px solid var(--ln);border-radius:18px;padding:24px;background:linear-gradient(160deg,rgba(20,26,60,.55),rgba(8,10,24,.7));position:relative;overflow:hidden}
+.pn h3{font-size:.9rem;color:var(--dim);font-weight:500;margin-bottom:12px}.n{font:800 clamp(2.6rem,6vw,4.4rem)/1 Sora;background:linear-gradient(120deg,#fff,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pn small{display:block;color:var(--dim);font-size:.84rem;margin-top:8px}.s4{grid-column:span 4}.s6{grid-column:span 6}.s8{grid-column:span 8}
+.plat{display:flex;flex-wrap:wrap;gap:8px}.plat span{font-size:.88rem;padding:8px 14px;border-radius:10px;border:1px solid var(--ln);display:flex;gap:8px;align-items:center}.plat span:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}.plat span.l:before{background:var(--v);box-shadow:0 0 8px var(--v)}
+.leg{font-size:.8rem;color:var(--dim);margin-top:14px}.leg b{color:var(--c);font-weight:500}.leg u{color:var(--v);text-decoration:none}
+.foc{display:grid;gap:10px}.foc div{padding:12px 14px;border-left:2px solid var(--v);background:rgba(139,92,246,.07);border-radius:0 10px 10px 0;font-size:.94rem}
+/* surface */
+.sf{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
+#sv{width:100%;height:auto;max-height:560px}
+.dom{cursor:pointer}.dom circle.h{fill:#0b1030;stroke:var(--ln);stroke-width:1.5;transition:.3s}.dom text{fill:var(--dim);font:600 11px Sora;text-anchor:middle;pointer-events:none;transition:.3s}
+.dom:hover circle.h,.dom.on circle.h{stroke:var(--c);fill:#0f1a45;filter:drop-shadow(0 0 12px var(--c))}.dom.on text{fill:var(--c)}
+.sat{opacity:0;transition:.5s}.sat.on{opacity:1}.sat circle{fill:#0b1030;stroke:var(--v)}.sat text{fill:var(--ink);font:500 10px 'Instrument Sans';text-anchor:middle}.sat line{stroke:var(--v);stroke-opacity:.5}
+.sfp{padding:28px;border:1px solid var(--ln);border-radius:20px;background:rgba(10,14,34,.55);min-height:300px}
+.sfp h3{font-size:1.6rem;margin-bottom:8px}.sfp p{color:var(--dim);margin-bottom:16px}.tg{display:flex;flex-wrap:wrap;gap:8px}.tg span{padding:8px 14px;border-radius:99px;border:1px solid var(--v);font-size:.9rem;background:rgba(139,92,246,.1);animation:pp .5s backwards}@keyframes pp{from{opacity:0;transform:scale(.85)}}
+/* engagements */
+.eng{border-top:1px solid var(--ln);padding:44px 0;display:grid;grid-template-columns:260px 1fr;gap:40px}
+.eng h3{font-size:1.7rem;line-height:1.15;margin-bottom:10px}.eng .tag{font-size:.84rem;color:var(--c)}.eng .big{font:800 4.4rem/1 Sora;background:linear-gradient(120deg,var(--b),var(--c),var(--v));-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:20px}
+.rep{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 36px}.rep div b{display:block;font:600 .84rem Sora;color:var(--c);margin-bottom:4px}.rep div p{color:var(--dim);font-size:.95rem}.rep .full{grid-column:1/-1}
+/* lab */
+#lab{width:100%;height:auto}.nd{cursor:pointer}.nd rect{fill:#0b1030;stroke:var(--ln);stroke-width:1.5;transition:.3s}.nd text{fill:var(--ink);font:600 12px Sora;text-anchor:middle;pointer-events:none}.nd:hover rect,.nd.on rect{stroke:var(--c);filter:drop-shadow(0 0 10px var(--c))}
+.fl{stroke:var(--b);stroke-width:1.5;stroke-dasharray:5 7;fill:none;animation:dash 1.6s linear infinite}@keyframes dash{to{stroke-dashoffset:-24}}
+#lt{margin-top:14px;padding:20px 24px;border:1px solid var(--ln);border-radius:16px;color:var(--dim);min-height:84px}#lt b{color:var(--ink)}
+/* skills */
+.kc{display:grid;grid-template-columns:repeat(5,1fr);position:relative}.kc:before{content:"";position:absolute;left:0;right:0;top:25px;height:2px;background:linear-gradient(90deg,var(--r),var(--v),var(--c))}
+.ph{position:relative;padding-top:56px;padding-right:12px}.ph:before{content:"";position:absolute;top:18px;left:0;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--v);transition:.3s}
+.ph h3{font-size:1.05rem}.ph small{color:var(--dim);font-size:.8rem}.ph ul{list-style:none;margin-top:12px;display:grid;gap:6px}
+.ph li{font-size:.9rem;padding:6px 10px;border-radius:8px;border:1px solid transparent;color:var(--dim);cursor:default;transition:.25s}.ph li:hover{color:var(--ink);border-color:var(--c);background:rgba(34,227,255,.08)}
+.ph.A:before{border-color:var(--r)}.ph.D:before{border-color:var(--c)}
+.bl{display:flex;justify-content:space-between;font-size:.84rem;margin-bottom:24px}.bl span:first-child{color:var(--r)}.bl span:last-child{color:var(--c)}
+/* certs */
+.ac{border-top:1px solid var(--ln);padding:34px 0;display:grid;grid-template-columns:120px 60px 1fr;gap:26px;align-items:center}.ac:last-child{border-bottom:1px solid var(--ln)}
+.ac time{font:700 2.2rem Sora;color:var(--v)}.ac h3{font-size:1.5rem}.ac p{color:var(--dim)}.ac svg{filter:drop-shadow(0 0 10px rgba(34,227,255,.6))}
+/* contact */
+.au{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}.au button{font:600 .9rem Sora;padding:12px 22px;border-radius:99px;border:1px solid var(--ln);background:none;color:var(--dim);cursor:pointer}.au button[aria-selected=true]{background:linear-gradient(120deg,var(--b),var(--v));color:#fff;border-color:transparent}
+.cp{padding:44px;border:1px solid var(--ln);border-radius:26px;background:radial-gradient(ellipse at 50% 0,rgba(80,100,255,.22),transparent 65%),rgba(8,10,24,.7)}
+.cp h3{font-size:clamp(1.6rem,4vw,2.6rem);max-width:20ch;margin-bottom:12px}.cp p{color:var(--dim);max-width:56ch;margin-bottom:20px}.cp ul{list-style:none;display:grid;gap:8px;margin-bottom:26px}.cp li:before{content:"+ ";color:var(--c)}
+.ls{display:flex;gap:12px;flex-wrap:wrap}.meta{margin-top:24px;color:var(--dim);font-size:.9rem}
+footer{padding:30px 0 60px;text-align:center;color:var(--dim);font-size:.84rem}
+/*P*/@media(max-width:860px){nav a.l{display:none}.sf,.eng{grid-template-columns:1fr}.s4,.s6,.s8{grid-column:span 12}.kc{grid-template-columns:1fr}.kc:before{left:7px;right:auto;top:0;bottom:0;width:2px;height:auto;background:linear-gradient(var(--r),var(--v),var(--c))}.ph{padding:0 0 22px 36px}.ph:before{left:0;top:4px}.ac{grid-template-columns:70px 1fr}.ac svg{display:none}.rep{grid-template-columns:1fr}.jgrid{grid-template-columns:40px 1fr;gap:16px}.cp{padding:26px}.mode{right:12px;bottom:12px}section{padding:80px 0}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}html{scroll-behavior:auto}.rv{opacity:1;transform:none}h1 span{opacity:1;transform:none}}
+
+/* polish pass */
+.pn,.sfp,.cp{border-radius:20px}
+h2{text-wrap:balance}.sub{margin-bottom:48px}
+.dash{position:absolute;right:max(24px,calc((100vw - 1120px)/2 + 24px));top:50%;transform:translateY(-50%);width:318px;z-index:3;border:1px solid var(--ln);border-radius:20px;background:linear-gradient(160deg,rgba(14,20,50,.78),rgba(5,7,18,.82));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--ln);font:600 .74rem Sora;letter-spacing:.06em;color:var(--dim)}.dh span{display:flex;gap:8px;align-items:center}.dh i{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);animation:pl 2s infinite}.dh em{font-style:normal;color:var(--c)}
+.dr{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:11px 18px;border-bottom:1px solid rgba(120,150,255,.08);font-size:.86rem}.dr:last-child{border:0}.dr span{color:var(--dim)}.dr b{font-weight:500}.dr b.ok{color:var(--c)}
+.dr:first-of-type{background:rgba(34,227,255,.04)}
+.mm{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:18px;max-width:50ch}.mm div{font-size:.8rem;color:var(--dim);line-height:1.45;padding-left:10px;border-left:1px solid var(--ln)}.mm b{display:block;color:var(--c);font:600 .7rem Sora;letter-spacing:.05em;margin-bottom:1px}
+.stage{min-height:68vh}.sg h3{font-size:clamp(2.4rem,7vw,5rem);margin-bottom:14px}.sg p{font-size:1rem}
+.s12{grid-column:span 12}.md{display:grid;grid-template-columns:repeat(5,1fr);gap:0}.md div{padding:4px 20px;border-left:1px solid var(--ln)}.md div:first-child{border:0;padding-left:0}.md span{display:block;font-size:.78rem;color:var(--dim);margin-bottom:6px}.md b{font:600 .95rem/1.35 Sora;display:block}.md small{margin-top:6px!important}.md .hot b{color:var(--c)}
+.dl{display:grid;gap:14px;margin-top:20px}.dl div{display:grid;grid-template-columns:110px 1fr;gap:12px;padding-top:14px;border-top:1px solid var(--ln);font-size:.92rem}.dl dt{color:var(--c);font:600 .8rem Sora;padding-top:2px}.dl dd{color:var(--dim)}
+.sfp{min-height:420px}.sfp>p{margin-bottom:14px}
+.sum{border-top:1px solid var(--ln);padding-top:22px}.sum>b{margin-bottom:14px!important}.sm4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.sm4>div>span{display:block;font-size:.76rem;color:var(--dim);margin-bottom:8px}
+.cv{display:flex;flex-wrap:wrap;gap:6px}.cv i{font-style:normal;font-size:.78rem;color:var(--ink);padding:3px 9px 3px 7px;border:1px solid var(--ln);border-radius:99px;display:flex;gap:6px;align-items:center}.cv i:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--c);box-shadow:0 0 6px var(--c)}.cv.rk i:before{background:var(--r);box-shadow:0 0 6px var(--r)}
+.tr{list-style:none;display:grid;gap:0;position:relative}.tr li{font-size:.84rem;padding-left:20px;position:relative;line-height:1.9;color:var(--ink)}.tr li:before{content:"";position:absolute;left:0;top:.68em;width:7px;height:7px;border-radius:50%;background:var(--v);z-index:1}.tr li:after{content:"";position:absolute;left:3px;top:1.2em;bottom:-.6em;width:1px;background:var(--ln)}.tr li:last-child:after{display:none}
+.ck{list-style:none;display:grid;gap:3px}.ck li{font-size:.84rem;padding-left:18px;position:relative;color:var(--ink)}.ck li:before{content:"";position:absolute;left:1px;top:.45em;width:8px;height:4px;border-left:1.5px solid var(--c);border-bottom:1.5px solid var(--c);transform:rotate(-45deg)}
+.lg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}.lg .pn{padding:20px}.lg .pn h3{margin-bottom:14px}.lg ul{list-style:none;display:grid;gap:7px}.lg li{font-size:.88rem;color:var(--ink);padding-left:14px;position:relative}.lg li:before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--v)}
+.ms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ms div b{display:block;font:800 1.7rem/1 Sora;background:linear-gradient(120deg,#fff,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}.ms div span{font-size:.74rem;color:var(--dim);line-height:1.3;display:block;margin-top:4px}
+.gz{margin-top:12px;display:grid;gap:4px;padding-top:10px;border-top:1px dashed var(--ln)}.gz p{font-size:.78rem;line-height:1.45;color:var(--dim)}.gz b{color:var(--c);font-weight:600}
+.ac{grid-template-columns:110px 56px 1fr}.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:18px}.cd span{display:block;font-size:.74rem;color:var(--c);font-family:Sora;font-weight:600;margin-bottom:3px}.cd p{font-size:.86rem;color:var(--dim);line-height:1.5;margin:0}
+.ts{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--ln)}.ts div{padding:2px 16px;border-left:1px solid var(--ln)}.ts div:first-child{border:0;padding-left:0}.ts span{display:block;font-size:.74rem;color:var(--dim);margin-bottom:4px}.ts b{font:500 .9rem/1.4 'Instrument Sans'}.ts b.ok{color:var(--c)}
+@media(max-width:1060px){.dash{display:none}.lg{grid-template-columns:repeat(2,1fr)}.sm4{grid-template-columns:repeat(2,1fr)}.md,.ts{grid-template-columns:repeat(2,1fr);gap:18px 0}.md div:nth-child(odd),.ts div:nth-child(odd){border-left:0;padding-left:0}.cd{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.mm{grid-template-columns:1fr}.mm div:nth-child(n+3){display:none}.stage{min-height:74vh}.sg h3{font-size:2.3rem}.sg p{font-size:.92rem}.dl div{grid-template-columns:1fr;gap:2px}.lg,.sm4,.cd{grid-template-columns:1fr}.ac{grid-template-columns:70px 1fr}.s12{grid-column:span 12}}
+
+/* readability + ambient pass */
+section{overflow:clip}section>.w{position:relative;z-index:1}
+section#journey{height:auto;padding:120px 0}
+.jx{display:grid;grid-template-columns:minmax(300px,.9fr) 1.3fr;gap:28px;align-items:start}
+.jl{list-style:none;display:grid;gap:6px;position:relative}
+.jb{display:grid;gap:2px;width:100%;text-align:left;padding:16px 20px 16px 46px;border-radius:16px;border:1px solid transparent;background:none;color:var(--ink);cursor:pointer;font:inherit;position:relative;transition:background .2s,border-color .2s}
+.jb:before{content:"";position:absolute;left:18px;top:22px;width:11px;height:11px;border-radius:50%;border:2px solid var(--ln);background:var(--bg);transition:.25s}
+.jl li:not(:last-child) .jb:after{content:"";position:absolute;left:23px;top:36px;bottom:-26px;width:1px;background:var(--ln)}
+.jb:hover{background:rgba(120,150,255,.06)}
+.jb[aria-selected=true]{border-color:var(--ln);background:linear-gradient(160deg,rgba(20,26,60,.6),rgba(8,10,24,.6))}
+.jb[aria-selected=true]:before{border-color:var(--c);background:var(--c);box-shadow:0 0 12px var(--c)}
+.jb small{font-size:.78rem;color:var(--dim)}.jb small em{font-style:normal;color:var(--c)}
+.jb b{font:700 1.1rem Sora;letter-spacing:-.02em}.jb span{font-size:.88rem;color:var(--dim);line-height:1.45}
+.jp{border:1px solid var(--ln);border-radius:20px;padding:34px;background:linear-gradient(160deg,rgba(20,26,60,.5),rgba(8,10,24,.7));min-height:100%;position:sticky;top:90px}
+.jc{display:none}.jc.on{display:block;animation:fi .45s ease}@keyframes fi{from{opacity:0;transform:translateY(8px)}}
+.jc>small{color:var(--c);font-size:.88rem}.jc h3{font-size:clamp(2.1rem,4.6vw,3.3rem);line-height:1.05;font-weight:800;margin:6px 0 14px}
+.jc.fut h3{background:linear-gradient(100deg,var(--c),var(--v));-webkit-background-clip:text;background-clip:text;color:transparent}
+.jc>p{color:var(--dim);max-width:56ch;font-size:1rem}
+.jc .mm{max-width:none;grid-template-columns:1fr 1fr;gap:20px 28px;margin-top:26px;padding-top:24px;border-top:1px solid var(--ln)}
+.jc .mm div,.jc .mm div:nth-child(n+3){display:block;font-size:.92rem;color:var(--ink);line-height:1.5}.jc .mm b{font-size:.72rem;color:var(--c);margin-bottom:4px}
+.am{position:absolute;width:min(540px,54vw);opacity:.3;pointer-events:none;z-index:0;-webkit-mask-image:radial-gradient(closest-side,#000 50%,transparent 100%);mask-image:radial-gradient(closest-side,#000 50%,transparent 100%)}
+.am svg{width:100%;height:auto;display:block}.am line,.am path,.am polyline,.am ellipse{fill:none;stroke:rgba(90,120,255,.55);stroke-width:1}.am circle{fill:rgba(34,227,255,.75)}.am rect{fill:rgba(14,20,50,.5);stroke:rgba(90,120,255,.5)}
+.am .tp{stroke:rgba(255,77,109,.85);stroke-dasharray:4 7;animation:dash 3s linear infinite}
+.am.tr{top:70px;right:-60px}.am.tl{top:70px;left:-80px}.am.bl{bottom:20px;left:-80px}.am.br{bottom:20px;right:-60px}
+@media(max-width:860px){section#journey{padding:80px 0}.jx{grid-template-columns:1fr}.jp{position:static;padding:24px}.jc .mm{grid-template-columns:1fr}.am{opacity:.16;width:90vw}}
+
+/* attack surface: map for navigation, panel for content */
+.sat .orb{fill:none;stroke:rgba(139,92,246,.4);stroke-dasharray:3 6}
+.sat .sn{cursor:pointer}.sat .sn circle{transition:.2s}.sat text{font:600 10px Sora;fill:#eaf0ff;pointer-events:none}
+.sat .sn.hot circle,.sat .sn:focus circle{stroke:var(--c);fill:#10204f;filter:drop-shadow(0 0 8px var(--c))}
+.sat .sn:focus{outline:none}
+.tl{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.tl li{display:flex;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--ln);border-radius:12px;color:var(--ink);font-size:.94rem;line-height:1.35;transition:.2s}
+.tl i{font:600 .72rem Sora;font-style:normal;width:22px;height:22px;flex:none;border-radius:50%;border:1px solid var(--v);display:grid;place-items:center;color:var(--c)}
+.tl li.hot,.tl li:focus{border-color:var(--c);background:rgba(34,227,255,.08);outline:none}
+.sfp .dl dd{font-size:.95rem}
+
+/* attack surface: platform behaviour */
+.cn{stroke:rgba(120,150,255,.25);stroke-width:1.2;transition:stroke .3s,opacity .3s,stroke-width .3s}
+.cn.hv{stroke:var(--c);stroke-opacity:.85;filter:drop-shadow(0 0 5px var(--c))}
+.cn.on{stroke:var(--c);stroke-width:1.8;stroke-dasharray:5 7;animation:dash 1.8s linear infinite;filter:drop-shadow(0 0 6px var(--c))}
+#sv .dom{transition:opacity .3s}#sv.has .dom:not(.on):not(.hv){opacity:.62}#sv.has .cn:not(.on):not(.hv){opacity:.45}
+.dom.hv circle.h{stroke:var(--c);filter:drop-shadow(0 0 8px var(--c))}.dom:focus{outline:none}.dom:focus-visible circle.h{stroke:var(--c);stroke-width:2.5;filter:drop-shadow(0 0 12px var(--c))}
+.dom .pu{fill:none;stroke:var(--c);opacity:0;pointer-events:none;transform-box:fill-box;transform-origin:center}.dom.on .pu{animation:pu 2.8s ease-out infinite}
+@keyframes pu{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.35);opacity:0}}
+.rp{fill:none;stroke:var(--c);pointer-events:none;transform-box:fill-box;transform-origin:center;animation:rp .6s ease-out forwards}@keyframes rp{from{transform:scale(1);opacity:.6}to{transform:scale(2);opacity:0}}
+.sat{transition:opacity .35s}.sat .sn{transform-box:fill-box;transform-origin:center;animation:pp .35s backwards}
+.sat .tn circle{fill:var(--c);stroke:none;opacity:.75;transition:.2s}.sat .tn.hot circle{r:6;opacity:1;filter:drop-shadow(0 0 6px var(--c))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sb{display:grid;grid-template-columns:minmax(0,1.5fr) auto auto auto;border:1px solid var(--ln);border-radius:14px;background:rgba(5,8,25,.55);overflow:hidden}
+.sb>div{padding:11px 14px;border-left:1px solid var(--ln);min-width:0}.sb>div:first-child{border:0}
+.sb>div:first-child span{white-space:normal}.sb span{white-space:nowrap;display:block;font:600 .62rem Sora;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+.sb b{font:700 .98rem Sora;display:block;overflow-wrap:anywhere}.sb b.u{animation:ub .3s ease}@keyframes ub{from{opacity:0;transform:translateY(4px)}}
+.sb b.ok{color:var(--c);display:flex;align-items:center;gap:7px}.sb b.ok i{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);animation:pl 2s infinite}
+.pv{font-size:.8rem;color:var(--dim);min-height:1.5em;margin:12px 2px 4px;transition:color .2s}.pv.p{color:var(--c)}
+.sfb{transition:opacity .2s,transform .2s}.sfb.out{opacity:0;transform:translateX(10px)}.sfb.in{animation:sin .35s cubic-bezier(.2,.8,.2,1)}@keyframes sin{from{opacity:0;transform:translateX(-10px)}}
+.sd{color:var(--ink);font-size:1rem;line-height:1.55;margin:8px 0 0}
+.ps{margin-top:20px}.ps h4{font:600 .68rem Sora;letter-spacing:.1em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:10px;margin-bottom:10px}.ps h4:after{content:"";flex:1;height:1px;background:var(--ln)}
+.ps>p{font-size:.94rem;color:var(--dim);line-height:1.55;margin:0}
+#tc span{border-color:rgba(34,227,255,.5);background:rgba(34,227,255,.07);transition:.2s;animation:none}#tc span.hot,#tc span:focus{border-color:#fff;background:rgba(34,227,255,.2);outline:none}
+@media(max-width:560px),(min-width:861px) and (max-width:1180px){.sb{grid-template-columns:1fr 1fr}.sb>div:nth-child(3){border-left:0}.sb>div:nth-child(n+3){border-top:1px solid var(--ln)}}
+@media(prefers-reduced-motion:reduce){.dom .pu,.rp{display:none}.cn.on{animation:none}*{animation-iteration-count:1!important}}
+
+/* hero: operator identity module (no canvas, no new JS) */
+.idm{display:none;position:absolute;z-index:3;border:1px solid rgba(34,227,255,.22);border-radius:16px;background:linear-gradient(160deg,rgba(18,26,64,.38),rgba(5,8,20,.3));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 0 44px -12px rgba(59,107,255,.4),inset 0 0 32px rgba(34,227,255,.04);pointer-events:none}
+.idm .is{position:absolute;inset:0;border-radius:16px;overflow:hidden}.idm .is:after{content:"";position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(transparent,rgba(34,227,255,.07),transparent);animation:isc 8s linear infinite}
+@keyframes isc{to{transform:translateY(450%)}}
+.ib{position:absolute;width:11px;height:11px;border:1.5px solid var(--c);opacity:.65}.ib.a{top:-1px;left:-1px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}.ib.b{top:-1px;right:-1px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}.ib.c{bottom:-1px;left:-1px;border-right:0;border-top:0;border-radius:0 0 0 6px}.ib.d{bottom:-1px;right:-1px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.idl{display:none;position:absolute;right:-72px;top:50%;width:70px;height:120px;transform:translateY(-50%);overflow:visible}.idl circle{fill:var(--c);opacity:.55}
+.ih{display:flex;align-items:center;gap:14px;position:relative}.ik{width:44px;height:44px;flex:none;filter:drop-shadow(0 0 8px rgba(34,227,255,.45))}.ik .kp{animation:kp 4s ease-in-out infinite}@keyframes kp{50%{opacity:.35}}
+.ih small{display:block;font:600 .6rem Sora;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}.ih b{display:block;font:700 1.28rem/1.15 Sora;letter-spacing:.02em;color:var(--ink)}.ih em{display:block;font:600 .7rem Sora;letter-spacing:.12em;font-style:normal;color:var(--c);margin-top:2px}
+.ic{list-style:none;position:relative}.ic li{font:600 .86rem Sora;letter-spacing:.03em;color:var(--ink)}.ic span{display:block;font:500 .6rem 'Instrument Sans';letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+/* wide screens: left gutter block */
+@media(min-width:1680px) and (min-height:640px){
+.idm{display:block;--iw:min(300px,calc((100vw - 1120px)/2 - 80px));width:var(--iw);left:calc((100vw - 1120px)/2 - var(--iw) - 40px);top:50%;transform:translateY(-50%);padding:24px 22px}
+.idm:before{content:"";position:absolute;inset:-60px;background:radial-gradient(closest-side,rgba(59,107,255,.14),transparent);z-index:-1}
+.idl{display:block}.ih{padding-bottom:18px;border-bottom:1px solid var(--ln);margin-bottom:6px}.ic li{padding:13px 0;border-bottom:1px solid rgba(120,150,255,.09)}.ic li:last-child{border:0;padding-bottom:0}}
+/* laptop and desktop: compact strip along the bottom-left */
+@media(min-width:861px) and (max-width:1679px) and (min-height:820px){
+.idm{display:flex;align-items:center;gap:26px;left:max(24px,calc((100vw - 1120px)/2 + 24px));bottom:24px;padding:12px 20px;max-width:calc(100vw - 340px)}
+.ih b{font-size:1.05rem}.ic{display:flex;gap:0}.ic li{padding:0 18px;border-left:1px solid var(--ln);font-size:.78rem;white-space:nowrap}.ic li:first-child{border-left:0}}
+@media(min-width:861px) and (max-width:1180px) and (min-height:820px){.ic li:nth-child(n+3){display:none}}
+@media(prefers-reduced-motion:reduce){.idm .is:after{display:none}}
+
+/* bug-fix release */
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){h1 span{color:var(--ink)}}
+@media(min-width:1061px){.hero .w{width:100%}}
+.jp{scroll-margin-top:84px}
+.lw{overflow-x:auto}
+@media(max-width:760px){#lab{min-width:700px}}
+@media(max-width:600px){.dom text{font-size:13px}.sat .sn circle{r:23px}.sat text{font-size:14px}}
+@media(pointer:coarse){.cta .btn,#cb .btn,.eng .btn,.au button,.mode button,.tl li{min-height:44px}#tc span{display:inline-flex;align-items:center;min-height:44px}.meta a{display:inline-block;padding:14px 10px;margin:-14px -10px}}
+</style></head><body>
+<a class="skip" href="#main">Skip to content</a><div id="pg"></div>
+<nav aria-label="Primary"><b>Aman Shaikh</b><a class="l" href="#journey">Journey</a><a class="l" href="#ops">Operations</a><a class="l" href="#surface">Attack surface</a><a class="l" href="#work">Engagements</a><a class="l" href="#skills">Skills</a><a class="btn p" href="#contact">Hire me</a></nav>
+
+<header class="hero"><canvas id="map" aria-hidden="true"></canvas>
+<div class="w"><span class="st"><i></i>Defense active. Open to SOC and VAPT roles.</span>
+<h1 aria-label="Aman Shaikh"><span style="animation-delay:.1s">AMAN</span><br><span style="animation-delay:.3s">SHAIKH</span></h1>
+<div class="rot" aria-live="off"><span>Detect attacks.</span><span>Hunt threats.</span><span>Assess vulnerabilities.</span><span>Secure systems.</span></div>
+<p class="lede">SOC Analyst L1 who learned to attack first, then learned how attacks look from the defender’s seat. Move your cursor: that’s the network I watch.</p>
+<div class="cta"><a class="btn p" href="#surface">Explore the attack surface</a><a class="btn" href="#contact">Recruiter mode</a></div></div>
+<aside class="idm" aria-label="Operator profile">
+<div class="is" aria-hidden="true"></div><i class="ib a" aria-hidden="true"></i><i class="ib b" aria-hidden="true"></i><i class="ib c" aria-hidden="true"></i><i class="ib d" aria-hidden="true"></i>
+<svg class="idl" viewBox="0 0 70 120" aria-hidden="true"><defs><linearGradient id="ig" x1="0" x2="1"><stop offset="0" stop-color="#22e3ff" stop-opacity=".55"/><stop offset="1" stop-color="#3b6bff" stop-opacity="0"/></linearGradient></defs><path d="M0 60L38 24M0 60L58 60M0 60L38 96" stroke="url(#ig)" fill="none" stroke-dasharray="3 5"/><circle cx="38" cy="24" r="2.2"/><circle cx="58" cy="60" r="2.2"/><circle cx="38" cy="96" r="2.2"/></svg>
+<div class="ih"><svg class="ik" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4l16 6v11c0 10-7 18-16 22C15 39 8 31 8 21V10z" stroke="#22e3ff" stroke-width="1.4"/><path d="M24 14l8 4.6v9.2L24 32.4l-8-4.6v-9.2z" stroke="#8b5cf6" stroke-width="1.2"/><circle class="kp" cx="24" cy="23" r="3" fill="#22e3ff"/></svg>
+<div><small>Operator profile</small><b>AMAN SHAIKH</b><em>SOC ANALYST L1</em></div></div>
+<ul class="ic"><li><span>Credential</span>CRTA</li><li><span>Record</span>108 LABS SOLVED</li><li><span>Unit</span>SPIDERIT</li><li><span>Path</span>VAPT ENGINEER PATH</li></ul>
+</aside>
+<aside class="dash" aria-label="Operations status"><div class="dh"><span><i></i>OPS STATUS</span><em>LIVE</em></div>
+<div class="dr"><span>Role</span><b>SOC Analyst L1, SpiderIT</b></div><div class="dr"><span>Focus</span><b>VAPT and red teaming</b></div><div class="dr"><span>Labs completed</span><b>108 documented</b></div><div class="dr"><span>Certifications</span><b>2 earned, 2025</b></div><div class="dr"><span>Learning path</span><b>Active Directory, red team tradecraft</b></div><div class="dr"><span>Availability</span><b class="ok">Open to roles</b></div></aside>
+<div class="mode"><span>Map view</span><button aria-pressed="true" data-m="def">Defense</button><button aria-pressed="false" data-m="att">Attack</button></div></header>
+
+<main id="main">
+<section id="journey" aria-label="The security journey"><div class="w"><p class="k rv">The journey</p><h2 class="rv">Five steps, one direction.</h2><p class="sub rv">The whole path at a glance. Select a step for the details.</p><div class="jx rv"><ol class="jl" role="tablist" aria-label="Career steps" aria-orientation="vertical"><li><button class="jb" role="tab" aria-selected="false" aria-controls="jc0" id="jt0"><small>BE, SPPU, 2025</small><b>Student</b><span>IT degree; offense learned through hands-on web labs</span></button></li><li><button class="jb" role="tab" aria-selected="false" aria-controls="jc1" id="jt1"><small>Nov 2024 – Jan 2025</small><b>Intern</b><span>Pentesting at ShadowFox, red team simulations at First Quadrant Labs</span></button></li><li><button class="jb" role="tab" aria-selected="true" aria-controls="jc2" id="jt2"><small>Mar 2025 – now · <em>Current</em></small><b>SOC Analyst</b><span>Live alert triage in Splunk, QRadar and ELK at SpiderIT</span></button></li><li><button class="jb" role="tab" aria-selected="false" aria-controls="jc3" id="jt3"><small>In parallel</small><b>Researcher</b><span>108 documented labs; CRTA earned in 2025</span></button></li><li><button class="jb" role="tab" aria-selected="false" aria-controls="jc4" id="jt4"><small>Next</small><b>VAPT Engineer</b><span>Combining offense and defense in a VAPT role</span></button></li></ol><div class="jp"><div class="jc" role="tabpanel" id="jc0" aria-labelledby="jt0"><small>Chapter 1</small><h3>Student.</h3><p>BE in Information Technology, SPPU, class of 2025. Security started as curiosity about how things break: offensive first, with hands-on web labs.</p><div class="mm"><div><b>TECHNOLOGIES</b>Linux, Kali Linux, Burp Suite</div><div><b>KEY ACHIEVEMENT</b>BE in Information Technology, SPPU</div><div><b>SKILLS GAINED</b>Web vulnerability basics, OWASP Top 10</div><div><b>MILESTONE</b>First documented pentest labs</div></div></div><div class="jc" role="tabpanel" id="jc1" aria-labelledby="jt1"><small>Chapter 2, Nov 2024 to Jan 2025</small><h3>Intern.</h3><p>ShadowFox: web app pentesting in labs (SQLi, XSS, IDOR) and 500+ alerts triaged in a simulated SOC. First Quadrant Labs: red team simulations and privilege escalation paths.</p><div class="mm"><div><b>TECHNOLOGIES</b>Splunk, IBM QRadar</div><div><b>KEY ACHIEVEMENT</b>500+ alerts triaged in a simulated SOC</div><div><b>SKILLS GAINED</b>SQLi, XSS, IDOR testing; privilege escalation analysis</div><div><b>MILESTONE</b>Two internships completed</div></div></div><div class="jc on" role="tabpanel" id="jc2" aria-labelledby="jt2"><small>Chapter 3, Mar 2025 to now</small><h3>SOC Analyst.</h3><p>SpiderIT. Monitoring and triage across Splunk, IBM QRadar and ELK, validating IOCs, escalating incidents and supporting vulnerability assessments and patching.</p><div class="mm"><div><b>TECHNOLOGIES</b>Splunk, IBM QRadar, ELK</div><div><b>KEY ACHIEVEMENT</b>Live alert triage and escalation</div><div><b>SKILLS GAINED</b>IOC validation, incident investigation, patch support</div><div><b>MILESTONE</b>Joined SpiderIT, Mar 2025</div></div></div><div class="jc" role="tabpanel" id="jc3" aria-labelledby="jt3"><small>Chapter 4, in parallel</small><h3>Researcher.</h3><p>108 labs on PortSwigger and HAckviser, each written as a proof-of-concept report. Offensive and defensive knowledge started to reinforce each other.</p><div class="mm"><div><b>TECHNOLOGIES</b>Burp Suite, OWASP ZAP, sqlmap, Nmap</div><div><b>KEY ACHIEVEMENT</b>108 proof-of-concept reports</div><div><b>SKILLS GAINED</b>API security, SSRF, race conditions, prototype pollution</div><div><b>MILESTONE</b>CRTA earned, 2025</div></div></div><div class="jc fut" role="tabpanel" id="jc4" aria-labelledby="jt4"><small>Chapter 5, next</small><h3>VAPT Engineer.</h3><p>Growing toward VAPT and red teaming, carrying a defender’s view of what detection and reporting actually need.</p><div class="mm"><div><b>TECHNOLOGIES</b>BloodHound, Impacket, Metasploit</div><div><b>KEY ACHIEVEMENT</b>Offense and defense in one skill set</div><div><b>SKILLS GAINED</b>Active Directory attacks, red team tradecraft (in progress)</div><div><b>MILESTONE</b>Target: a dedicated VAPT role</div></div></div></div></div></div></section>
+
+<section id="ops"><div class="w"><p class="k rv">Operations center</p><h2 class="rv">What I’ve actually done.</h2><p class="sub rv">Real numbers from my work. Where a figure comes from a simulated or lab environment, it says so.</p>
+<div class="ops rv">
+<div class="pn s4"><h3>Labs completed</h3><div class="n" data-n="108">0</div><small>PortSwigger and HAckviser, each with a POC report</small></div>
+<div class="pn s4"><h3>Alerts triaged</h3><div class="n" data-n="500" data-s="+">0</div><small>Simulated SOC, Splunk and QRadar</small></div>
+<div class="pn s4"><h3>Time in security ops</h3><div class="n" data-n="1.5" data-d="1">0</div><small>Years, SOC Analyst L1 at SpiderIT</small></div>
+<div class="pn s8"><h3>Detection platforms</h3><div class="plat"><span>Splunk</span><span>IBM QRadar</span><span>ELK Stack</span><span class="l">MITRE ATT&amp;CK</span></div><p class="leg"><b>Daily SOC use</b> &nbsp; <u>Reference framework</u></p>
+<h3 style="margin-top:22px">Security tools</h3><div class="plat"><span class="l">Burp Suite</span><span class="l">OWASP ZAP</span><span class="l">Nmap</span><span class="l">Metasploit</span><span class="l">sqlmap</span><span class="l">Nessus</span><span class="l">BloodHound</span><span class="l">Impacket</span><span class="l">Kali Linux</span></div></div>
+<div class="pn s4"><h3>Current learning focus</h3><div class="foc"><div>VAPT methodology and reporting</div><div>Active Directory attacks</div><div>Red team tradecraft</div></div></div>
+<div class="pn s12"><h3>Mission dashboard</h3><div class="md"><div><span>Current position</span><b>SOC Analyst L1</b><small>SpiderIT, since Mar 2025</small></div><div><span>Current objective</span><b>Move into a dedicated VAPT role</b><small>Offense backed by SOC experience</small></div><div class="hot"><span>Latest achievement</span><b>CRTA certification</b><small>CyberWarFare Labs, 2025</small></div><div><span>Current focus</span><b>Active Directory and red team tradecraft</b><small>Alongside daily SIEM work</small></div><div><span>Next target</span><b>VAPT or red team engineer</b><small>Junior role, open now</small></div></div></div>
+</div></div></section>
+
+<section id="surface"><div class="w"><p class="k rv">Interactive attack surface</p><h2 class="rv">Pick a domain. See both sides.</h2><p class="sub rv">Hover a domain to preview it, click to lock it. Violet numbered dots are techniques and cyan dots are tools; both match the panel.</p>
+<div class="sf rv"><svg id="sv" viewBox="0 0 520 520" role="group" aria-label="Attack surface map"></svg>
+<div class="sfp"><span class="sr" id="sr" role="status"></span><div class="sb"><div><span>Selected domain</span><b id="b0"></b></div><div><span>Tools</span><b id="b1"></b></div><div><span>Techniques</span><b id="b2"></b></div><div><span>Status</span><b class="ok"><i></i>ACTIVE</b></div></div>
+<p class="pv" id="pv"></p>
+<div class="sfb" id="sfb"><p class="sd" id="sp"></p>
+<div class="ps"><h4>Techniques</h4><ol class="tl" id="tq"></ol></div>
+<div class="ps"><h4>Tools</h4><div class="tg" id="tc"></div></div>
+<div class="ps"><h4>Experience</h4><p id="ex"></p></div>
+<div class="ps"><h4>Real-world application</h4><p id="us"></p></div>
+<div class="ps"><h4>Current focus</h4><p id="lf"></p></div></div></div></div></div></section>
+
+<section id="work"><div class="w"><p class="k rv">Engagements</p><h2 class="rv">Written like client work.</h2>
+<article class="eng rv"><div><span class="tag">Offensive, web application security</span><h3>VAPT Labs: 108 documented exploits</h3><div class="big" data-n="108">0</div></div>
+<div class="rep"><div class="full"><b>Objective</b><p>Build real exploitation skill across the OWASP Top 10 and beyond, and prove it with reports a client could act on.</p></div>
+<div><b>Methodology</b><p>Recon, hypothesis, exploitation, then a structured POC: methodology, payload, screenshots, impact.</p></div>
+<div><b>Tools</b><p>Burp Suite, OWASP ZAP, sqlmap, Nmap, Kali Linux.</p></div>
+<div><b>Findings</b><p>SQL injection, authentication flaws, CSRF, SSRF, file upload RCE, GraphQL and NoSQL injection, prototype pollution, race conditions, LLM attacks.</p></div>
+<div><b>Impact</b><p>A public repository of reproducible reports, each readable by a developer or a reviewer.</p></div>
+<div class="full"><b>Lessons learned</b><p>A finding only counts once someone else can reproduce it. Writing the report is half the work.</p><a class="btn" style="margin-top:14px" href="https://github.com/Amanshaikh7247/VAPT-Labs-AmanShaikh" target="_blank" rel="noopener">Open the repository</a></div><div class="full sum"><b>Assessment summary</b><div class="sm4"><div><span>Coverage</span><div class="cv"><i>SQL injection</i><i>Authentication</i><i>CSRF</i><i>SSRF</i><i>File upload RCE</i><i>GraphQL</i><i>NoSQL injection</i><i>Prototype pollution</i><i>Race condition</i><i>LLM attacks</i></div></div><div><span>Methodology</span><ol class="tr"><li>Recon</li><li>Hypothesis</li><li>Exploit</li><li>Report</li></ol></div><div><span>Documentation</span><ul class="ck"><li>Screenshots</li><li>Methodology</li><li>Payload</li><li>Impact</li></ul></div><div><span>Risk categories</span><div class="cv rk"><i>Injection</i><i>Broken authentication</i><i>Server-side requests</i><i>Business logic</i></div></div></div></div></div></article>
+<article class="eng rv"><div><span class="tag">Defensive, security operations</span><h3>SOC alert triage, simulated then live</h3><div class="big" data-n="500" data-s="+">0</div></div>
+<div class="rep"><div class="full"><b>Objective</b><p>Learn to separate real signals from noise, fast and consistently.</p></div>
+<div><b>Methodology</b><p>Validate IOCs, correlate across sources, escalate high-risk incidents with clear evidence.</p></div>
+<div><b>Tools</b><p>Splunk, IBM QRadar, ELK Stack.</p></div>
+<div><b>Findings</b><p>500+ alerts triaged in a simulated SOC at ShadowFox; the same workflow now runs on live alerts at SpiderIT, from brute-force attempts to malware infections.</p></div>
+<div><b>Impact</b><p>Faster, better-documented escalations, plus vulnerability assessments supporting patch management.</p></div>
+<div class="full"><b>Lessons learned</b><p>Knowing how an attack is built makes it much easier to recognise in the logs.</p></div><div class="full sum"><b>Assessment summary</b><div class="sm4"><div><span>Coverage</span><div class="cv"><i>Brute-force attempts</i><i>Malware infections</i><i>IOC validation</i></div></div><div><span>Methodology</span><ol class="tr"><li>Detect</li><li>Validate</li><li>Correlate</li><li>Escalate</li></ol></div><div><span>Documentation</span><ul class="ck"><li>Escalation evidence</li><li>IOC validation</li><li>Incident write-ups</li></ul></div><div><span>Risk categories</span><div class="cv rk"><i>Account compromise</i><i>Malware</i><i>Vulnerable assets</i></div></div></div></div></div></article>
+</div></section>
+
+<section id="labs"><div class="w"><p class="k rv">Threat hunter lab</p><h2 class="rv">How I train.</h2><p class="sub rv">One loop: attack from Kali, observe in the detection stack. Hover or focus a node.</p>
+<div class="rv"><div class="lw"><svg id="lab" viewBox="0 0 760 320" role="group" aria-label="Lab environment diagram"></svg></div><div id="lt" aria-live="polite"></div>
+<div class="lg"><div class="pn"><h3>Lab statistics</h3><div class="ms"><div><b>108</b><span>labs solved</span></div><div><b>2</b><span>platforms</span></div><div><b>10</b><span>vulnerability classes</span></div></div></div>
+<div class="pn"><h3>Tool counts</h3><div class="ms"><div><b>9</b><span>offensive tools</span></div><div><b>3</b><span>SIEM platforms</span></div><div><b>4</b><span>frameworks</span></div></div></div>
+<div class="pn"><h3>Environment components</h3><ul><li>Kali Linux workstation</li><li>PortSwigger and HAckviser labs</li><li>Active Directory targets</li><li>Splunk, QRadar, ELK</li></ul></div>
+<div class="pn"><h3>Training focus</h3><ul><li>Web and API exploitation</li><li>Active Directory attack paths</li><li>Detection mapped to MITRE ATT&amp;CK</li><li>Reproducible POC reporting</li></ul></div></div></div></div></section>
+
+<section id="skills"><div class="w"><p class="k rv">Skills</p><h2 class="rv">The kill chain, both directions.</h2><p class="sub rv">Skills placed where they act in an attack, from the first probe to the final report. Red above, blue below the line.</p>
+<div class="bl rv"><span>Attacker view</span><span>Defender view</span></div>
+<div class="kc rv" id="kc"></div></div></section>
+
+<section id="certs"><div class="w"><p class="k rv">Achievements</p><h2 class="rv">Earned along the way.</h2>
+<div class="rv"><div class="ac"><time>2025</time><svg width="48" height="48" viewBox="0 0 44 44" fill="none" aria-hidden="true"><path d="M22 3l16 6v11c0 10-7 18-16 21C13 38 6 30 6 20V9z" stroke="#22e3ff" stroke-width="2"/><path d="M15 22l5 5 9-10" stroke="#8b5cf6" stroke-width="2.4" stroke-linecap="round"/></svg><div><h3>Certified Red Team Analyst (CRTA)</h3><p>CyberWarFare Labs</p><div class="cd"><div><span>Issuer</span><p>CyberWarFare Labs</p></div><div><span>Focus area</span><p>Red team analysis</p></div><div><span>Relevant skills</span><p>Active Directory attack paths, privilege escalation</p></div><div><span>Real-world application</span><p>Thinking like an attacker to judge which detections matter</p></div></div></div></div>
+<div class="ac"><time>2025</time><svg width="48" height="48" viewBox="0 0 44 44" fill="none" aria-hidden="true"><rect x="6" y="9" width="32" height="22" rx="3" stroke="#22e3ff" stroke-width="2"/><path d="M14 38h16M22 31v7" stroke="#8b5cf6" stroke-width="2.4" stroke-linecap="round"/></svg><div><h3>Cyber Security &amp; Ethical Hacking</h3><p>Training, Boston Institute of Analytics</p><div class="cd"><div><span>Issuer</span><p>Boston Institute of Analytics</p></div><div><span>Focus area</span><p>Ethical hacking foundations</p></div><div><span>Relevant skills</span><p>Web testing, Kali Linux, vulnerability assessment</p></div><div><span>Real-world application</span><p>The base for my lab work and internship testing</p></div></div></div></div></div></div></section>
+
+<section id="contact"><div class="w"><p class="k rv">Contact</p><h2 class="rv">Who are you?</h2>
+<div class="au rv" role="tablist" aria-label="Visitor type"><button role="tab" aria-selected="true">Recruiter</button><button role="tab" aria-selected="false">Client</button><button role="tab" aria-selected="false">Security professional</button></div>
+<div class="cp rv" aria-live="polite"><div class="ts"><div><span>Availability</span><b class="ok">Open to roles</b></div><div><span>Response</span><b>Email is fastest</b></div><div><span>Current interests</span><b>Active Directory, red teaming, detection</b></div><div><span>Preferred roles</span><b>Junior VAPT, SOC, network security</b></div><div><span>Location</span><b>Baramati, Maharashtra, India</b></div></div><h3 id="ch"></h3><p id="cpp"></p><ul id="cl"></ul><div class="ls" id="cb"></div><p class="meta"><a href="tel:+919850737247">+91 98507 37247</a></p>
+</div></div></section>
+</main><footer>© 2026 Aman Shaikh</footer>
+
+<script>
+(function(){
+const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)],rm=matchMedia('(prefers-reduced-motion:reduce)').matches,NS='http://www.w3.org/2000/svg';
+const EM='mr.shaikhaman7247@gmail.com',LI='https://www.linkedin.com/in/aman-shaikh-267b33341/',GH='https://github.com/Amanshaikh7247';
+/* reveal, counters, progress */
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.15});$$('.rv').forEach(e=>io.observe(e));
+function cnt(el){const t=+el.dataset.n,d=+el.dataset.d||0,s=el.dataset.s||'',t0=performance.now();(function f(n){const p=Math.min((n-t0)/1600,1),v=t*(1-Math.pow(1-p,3));el.textContent=(d?v.toFixed(d):Math.floor(v))+s;if(p<1)requestAnimationFrame(f)})(t0)}
+const i2=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){cnt(x.target);i2.unobserve(x.target)}}),{threshold:.5});$$('[data-n]').forEach(e=>i2.observe(e));
+/* journey */
+function sc(){const h=document.documentElement;$('#pg').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'}
+addEventListener('scroll',sc,{passive:true});sc();
+const jb=$$('.jb'),jc=$$('.jc');function jp(i,f){jb.forEach((b,k)=>{b.setAttribute('aria-selected',k===i);b.tabIndex=k===i?0:-1});jc.forEach((c,k)=>c.classList.toggle('on',k===i));if(f)jb[i].focus()}
+jb.forEach((b,i)=>{b.onclick=()=>{jp(i);if(innerWidth<=860&&$('.jp').getBoundingClientRect().top>innerHeight*.6)$('.jp').scrollIntoView({block:'start'})};b.onkeydown=e=>{const d=e.key==='ArrowDown'||e.key==='ArrowRight'?1:e.key==='ArrowUp'||e.key==='ArrowLeft'?-1:0;if(d){e.preventDefault();jp((i+d+5)%5,1)}}});jp(2);
+/* rotating headline */
+const rs=$$('.rot span');let ri=0;rs[0].classList.add('on');if(!rm)setInterval(()=>{rs[ri].classList.replace('on','off');const o=rs[ri];setTimeout(()=>o.classList.remove('off'),700);ri=(ri+1)%rs.length;rs[ri].classList.add('on')},2400);
+/* attack surface */
+const D=[{n:'Web Security',d:'Where most findings live. I exploit it in labs, then explain the fix.',tools:['Burp Suite','OWASP ZAP','sqlmap'],t:['SQLi','XSS','IDOR','SSRF','CSRF','Authentication bypass'],ex:'108 documented labs; web app pentesting at ShadowFox.',use:'Pre-release web app and API assessments; login and session flow testing.',lf:'GraphQL, race conditions, prototype pollution, LLM attacks.'},
+{n:'Security Operations',d:'Detection and response in a live SOC.',tools:['Splunk','IBM QRadar','ELK'],t:['Incident response','Threat detection','Alert triage','IOC validation'],ex:'SOC Analyst L1 at SpiderIT; simulated SOC at ShadowFox.',use:'Triage alerts, investigate brute-force and malware incidents, escalate high-risk cases.',lf:'Mapping detections to MITRE ATT&CK.'},
+{n:'Active Directory',d:'How attackers move inside a Windows domain.',tools:['BloodHound','Impacket'],t:['Privilege escalation','Attack path analysis'],ex:'Red team simulations at First Quadrant Labs; CRTA.',use:'Finding misconfigurations and escalation paths in a domain before attackers do.',lf:'AD attacks and red team tradecraft.'},
+{n:'Network Security',d:'Mapping what is exposed and what is vulnerable.',tools:['Nmap','Nessus'],t:['Vulnerability assessment','Network monitoring','Patch support'],ex:'Vulnerability assessments and patch management at SpiderIT.',use:'Mapping exposed services and prioritising what to patch first.',lf:'Linking network findings to detections.'}];
+const sv=$('#sv'),C=260,pos=[[260,90],[430,260],[260,430],[90,260]];let sd=-1;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||sv).appendChild(e);return e}
+el('circle',{cx:C,cy:C,r:200,fill:'none',stroke:'rgba(120,150,255,.12)'});el('circle',{cx:C,cy:C,r:120,fill:'none',stroke:'rgba(120,150,255,.12)','stroke-dasharray':'3 6'});
+const sats=D.map(()=>el('g',{}));
+const core=el('circle',{cx:C,cy:C,r:34,fill:'#0f1a45',stroke:'#22e3ff'});el('text',{x:C,y:C+4,fill:'#22e3ff','text-anchor':'middle','font-size':12,'font-family':'Sora','font-weight':700}).textContent='AMAN';
+D.forEach((d,i)=>{const[x,y]=pos[i];d.ln=el('line',{x1:C,y1:C,x2:x,y2:y,class:'cn'});
+ const g=el('g',{class:'dom',tabindex:0,role:'button','aria-label':d.n});el('circle',{class:'h',cx:x,cy:y,r:44},g);el('circle',{class:'pu',cx:x,cy:y,r:44},g);const t=el('text',{x:x,y:y+4},g);const w=d.n.split(' ');
+ if(w.length>1){t.textContent='';const a=el('tspan',{x:x,dy:-4},t);a.textContent=w[0];const b=el('tspan',{x:x,dy:14},t);b.textContent=w[1]}else t.textContent=d.n;
+ g.onclick=()=>pk(i,1);g.onmouseenter=g.onfocus=()=>hv(i);g.onmouseleave=g.onblur=()=>hv(-1);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pk(i,1)}};g.setAttribute('aria-pressed','false');d.g=g});
+function hv(i){D.forEach((d,k)=>{const on=k===i&&k!==sd;d.g.classList.toggle('hv',on);d.ln.classList.toggle('hv',on)});const pv=$('#pv');
+ if(i>=0&&i!==sd){pv.classList.add('p');pv.textContent='Preview: '+D[i].n+', '+D[i].tools.length+' tools, '+D[i].t.length+' techniques. Click to lock.'}else{pv.classList.remove('p');pv.textContent=sd>=0?'Locked on '+D[sd].n+'. Hover another domain to preview it.':''}}
+function hot(c,j){$$(c==='sn'?'#tq li':'#tc span').forEach((l,k)=>l.classList.toggle('hot',k===j));$$('.'+c).forEach(g=>g.classList.toggle('hot',+g.dataset.i===j))}
+function tick(id,v){const b=$(id);b.textContent=v;b.classList.remove('u');void b.offsetWidth;b.classList.add('u')}
+function pk(i,u){const prev=sd,q=D[i];
+ if(u){const[x,y]=pos[i],r=el('circle',{class:'rp',cx:x,cy:y,r:44});setTimeout(()=>r.remove(),700)}
+ if(prev===i)return;sd=i;sv.classList.add('has');
+ D.forEach((d,k)=>{d.g.classList.toggle('on',k===i);d.g.setAttribute('aria-pressed',k===i);d.ln.classList.toggle('on',k===i);d.g.classList.remove('hv');d.ln.classList.remove('hv')});
+ tick('#b0',q.n);tick('#b1',q.tools.length);tick('#b2',q.t.length);hv(-1);$('#sr').textContent=q.n+' selected. '+q.tools.length+' tools, '+q.t.length+' techniques.';
+ const fill=()=>{$('#sp').textContent=q.d;
+  $('#tq').innerHTML=q.t.map((t,j)=>`<li tabindex="0" data-i="${j}"><i>${j+1}</i>${t}</li>`).join('');
+  $('#tc').innerHTML=q.tools.map((t,j)=>`<span tabindex="0" data-i="${j}">${t}</span>`).join('');
+  $('#ex').textContent=q.ex;$('#us').textContent=q.use;$('#lf').textContent=q.lf;
+  $$('#tq li').forEach((l,j)=>{l.onmouseenter=l.onfocus=()=>hot('sn',j);l.onmouseleave=l.onblur=()=>hot('sn',-1)});
+  $$('#tc span').forEach((l,j)=>{l.onmouseenter=l.onfocus=()=>hot('tn',j);l.onmouseleave=l.onblur=()=>hot('tn',-1)})};
+ const body=$('#sfb');if(prev<0||rm){fill()}else{body.classList.add('out');setTimeout(()=>{fill();body.classList.remove('out');body.classList.add('in');setTimeout(()=>body.classList.remove('in'),380)},200)}
+ sats.forEach((g,k)=>{g.innerHTML='';g.setAttribute('class','sat'+(k===i?' on':''));if(k!==i)return;const[bx,by]=pos[k],n=q.t.length,a0=Math.atan2(by-C,bx-C),arc=Math.min(3.9,1.1+n*.55);
+  el('circle',{cx:bx,cy:by,r:70,class:'orb'},g);
+  q.t.forEach((t,j)=>{const a=n>1?a0+(j/(n-1)-.5)*arc:a0,X=Math.max(22,Math.min(498,bx+Math.cos(a)*70)),Y=Math.max(22,Math.min(498,by+Math.sin(a)*70));
+   el('line',{x1:bx,y1:by,x2:X,y2:Y},g);const o=el('g',{class:'sn','data-i':j,tabindex:0,role:'button','aria-label':'Technique '+(j+1)+': '+t},g);o.style.animationDelay=(j*45)+'ms';el('circle',{cx:X,cy:Y,r:12},o);el('text',{x:X,y:Y+3.5},o).textContent=j+1;
+   o.onmouseenter=o.onfocus=()=>hot('sn',j);o.onmouseleave=o.onblur=()=>hot('sn',-1)});
+  const nt=q.tools.length;q.tools.forEach((t,j)=>{const a=a0+Math.PI+(j-(nt-1)/2)*.5,o=el('g',{class:'tn','data-i':j,'aria-hidden':'true'},g);el('circle',{cx:(bx+Math.cos(a)*58).toFixed(1),cy:(by+Math.sin(a)*58).toFixed(1),r:4.5},o);o.onmouseenter=()=>hot('tn',j);o.onmouseleave=()=>hot('tn',-1)})})}
+pk(0);
+/* lab diagram */
+const L=[['Kali Linux',70,40,'The attack workstation: Burp Suite, Nmap, Metasploit, sqlmap, Impacket.'],['Web labs',70,140,'PortSwigger and HAckviser: 108 labs written up as POC reports.'],['OWASP',70,240,'The Top 10 and API security as the testing checklist.'],
+['Active Directory',300,140,'BloodHound and Impacket for AD attack paths and privilege escalation.'],['Detection tools',530,40,'Splunk, IBM QRadar and ELK: the view from the defender’s side.'],['SOC platforms',530,140,'Where alerts are triaged, validated and escalated.'],['MITRE ATT&CK',530,240,'Maps what I attack to what a SOC should detect.']];
+const lb=$('#lab');L.forEach(n=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','nd');g.setAttribute('tabindex',0);g.setAttribute('role','button');g.setAttribute('aria-label',n[0]);g.innerHTML=`<rect x="${n[1]}" y="${n[2]}" width="160" height="48" rx="12"/><text x="${n[1]+80}" y="${n[2]+29}">${n[0]}</text>`;n.g=g});
+[[0,3],[1,3],[2,3],[3,5],[3,4],[3,6]].forEach(([a,b])=>{const A=L[a],B=L[b],x1=A[1]<300?A[1]+160:A[1]+160,x2=B[1]>A[1]?B[1]:B[1]+160,p=document.createElementNS(NS,'path');p.setAttribute('class','fl');p.setAttribute('d',`M${A[1]+(A[1]<300?160:160)} ${A[2]+24} C ${(A[1]+160+B[1])/2} ${A[2]+24}, ${(A[1]+160+B[1])/2} ${B[2]+24}, ${B[1]} ${B[2]+24}`);lb.appendChild(p)});
+L.forEach(n=>{lb.appendChild(n.g);const f=()=>{$$('.nd',lb).forEach(x=>x.classList.toggle('on',x===n.g));$('#lt').innerHTML=`<b>${n[0]}</b><br>${n[3]}`};n.g.onmouseenter=f;n.g.onfocus=f;n.g.onclick=f});$('#lt').innerHTML='<b>Kali Linux</b><br>'+L[0][3];L[0].g.classList.add('on');
+/* kill chain skills */
+const K=[['Recon','Attacker',['Nmap','OSINT basics'],'ShadowFox and First Quadrant lab work','Map exposed services before any testing begins'],['Exploit','Attacker',['Burp Suite','sqlmap','Metasploit','OWASP Top 10'],'108 labs and ShadowFox web pentesting','Prove web flaws with reproducible POCs'],['Escalate','Attacker',['BloodHound','Impacket','Privilege escalation'],'First Quadrant Labs red team simulations','Find misconfigurations and privilege paths in controlled environments'],['Detect','Defender',['Splunk','IBM QRadar','ELK','MITRE ATT&CK'],'Simulated SOC at ShadowFox, live SOC at SpiderIT','Validate IOCs from SIEM alerts'],['Respond','Defender',['Incident response','Alert triage','Patch support','Reporting'],'SOC Analyst L1 at SpiderIT','Escalate incidents, support patching, write up findings']];
+$('#kc').innerHTML=K.map(k=>`<div class="ph ${k[1]==='Attacker'?'A':'D'}"><h3>${k[0]}</h3><small>${k[1]}</small><ul>${k[2].map(s=>`<li>${s}</li>`).join('')}</ul><div class="gz"><p><b>Gained</b> ${k[3]}</p><p><b>Applied</b> ${k[4]}</p></div></div>`).join('');
+/* contact modes */
+const M=[{h:'Hiring for a junior SOC, VAPT or network security role?',p:'SOC Analyst L1 with live Splunk, QRadar and ELK experience and 108 documented pentest labs. Ready to learn on your team.',l:['SOC Analyst L1 at SpiderIT since Mar 2025','BE Information Technology, SPPU, 2025','CRTA certified, CyberWarFare Labs'],b:[['Email for my resume','mailto:'+EM+'?subject=Resume%20request','p'],['LinkedIn',LI],['GitHub',GH]]},
+{h:'Need your web app or network checked?',p:'I do web application assessments and vulnerability assessments. Tell me what you run and what worries you.',l:['OWASP Top 10 and API testing','Nessus and Nmap vulnerability assessment','Clear reports your developers can act on'],b:[['Discuss your project','mailto:'+EM+'?subject=Security%20assessment','p'],['LinkedIn',LI]]},
+{h:'Working in offense, defense or detection?',p:'Happy to compare notes on labs, detections and AD attack paths. All my lab write-ups are public.',l:['108 POC reports on GitHub','Splunk, QRadar and ELK detection work','Learning toward red teaming'],b:[['Browse the labs',GH+'/VAPT-Labs-AmanShaikh','p'],['LinkedIn',LI],['Email',  'mailto:'+EM]]}];
+function cm(i){const m=M[i];$('#ch').textContent=m.h;$('#cpp').textContent=m.p;$('#cl').innerHTML=m.l.map(x=>`<li>${x}</li>`).join('');$('#cb').innerHTML=m.b.map(b=>`<a class="btn ${b[2]||''}" href="${b[1]}" ${b[1][0]==='h'?'target="_blank" rel="noopener"':''}>${b[0]}</a>`).join('')}
+$$('.au button').forEach((b,i)=>b.onclick=()=>{$$('.au button').forEach(x=>x.setAttribute('aria-selected',x===b));cm(i)});cm(0);
+/* ambient layers: static, low opacity, behind content */
+const RN=q=>()=>(q=(q*16807)%2147483647)/2147483647;
+function A_cl(k){const r=RN(k),n=Array.from({length:16},()=>[30+r()*400,25+r()*270]);let l='',c='';
+ n.forEach((a,i)=>{n.map((b,j)=>[Math.hypot(a[0]-b[0],a[1]-b[1]),j]).sort((x,y)=>x[0]-y[0]).slice(1,3).forEach(([d,j])=>{if(j>i)l+=`<line x1="${a[0]|0}" y1="${a[1]|0}" x2="${n[j][0]|0}" y2="${n[j][1]|0}"/>`})});
+ const t=[...n].sort((a,b)=>a[0]-b[0]).slice(0,5);n.forEach(a=>c+=`<circle cx="${a[0]|0}" cy="${a[1]|0}" r="2.6"/>`);
+ return`<svg viewBox="0 0 460 320">${l}<polyline class="tp" fill="none" points="${t.map(a=>a.map(Math.round).join(',')).join(' ')}"/>${c}</svg>`}
+function A_tp(k){const r=RN(k);let e='',c='';for(let i=1;i<=7;i++){e+=`<ellipse cx="230" cy="160" rx="${40+i*30}" ry="${24+i*19}" stroke-dasharray="${i%2?'2 6':'none'}"/>`;const a=r()*6.28;c+=`<circle cx="${(230+(40+i*30)*Math.cos(a))|0}" cy="${(160+(24+i*19)*Math.sin(a))|0}" r="2.6"/>`}return`<svg viewBox="0 0 460 320">${e}${c}</svg>`}
+function A_st(k){const r=RN(k);let o='';for(let i=0;i<9;i++){const x=24+i*52;o+=`<line x1="${x}" y1="0" x2="${x}" y2="320" stroke-dasharray="${2+(i%3)*3} ${8+(i%4)*4}"/><rect x="${x-4}" y="${(r()*290)|0}" width="8" height="8"/>`}return`<svg viewBox="0 0 460 320">${o}<path class="tp" d="M76 0V120H232V240H388V320"/></svg>`}
+function A_ar(k){let o='';[40,130,220].forEach((y,j)=>{for(let i=0;i<4;i++){o+=`<rect x="${20+i*110+j*10}" y="${y}" width="84" height="46" rx="8"/>`;if(j<2)o+=`<line x1="${62+i*110+j*10}" y1="${y+46}" x2="${72+i*110+j*10}" y2="${y+90}"/>`}});return`<svg viewBox="0 0 460 320">${o}<path class="tp" d="M62 86L72 130 182 176 192 220 302 266"/></svg>`}
+const AM={journey:[A_cl,'bl'],ops:[A_st,'tr'],surface:[A_tp,'tl'],work:[A_cl,'tr'],labs:[A_st,'br'],skills:[A_tp,'tr'],certs:[A_cl,'br'],contact:[A_tp,'bl']};
+Object.keys(AM).forEach((id,i)=>{const sc2=document.getElementById(id);if(!sc2)return;const d=document.createElement('div');d.className='am '+AM[id][1];d.setAttribute('aria-hidden','true');d.innerHTML=AM[id][0](i+3);sc2.insertBefore(d,sc2.firstChild)});
+/* hero map */
+const cv=$('#map'),cx=cv.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2);let W,H,N=[],mouse={x:-999,y:-999},mode='def',ev=[],tt=0;
+function rs2(){W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);const n=Math.min(70,Math.floor(W*H/16000));
+ N=Array.from({length:n},(_,i)=>({x:W*.45+Math.random()*W*.55,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,e:i<4}));}
+addEventListener('resize',rs2);rs2();
+const hero=cv.parentElement;hero.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top});hero.addEventListener('pointerleave',()=>mouse.x=-999);
+$$('.mode button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;$$('.mode button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+function path(){const a=N.filter(n=>n.e)[Math.floor(Math.random()*4)]||N[0],tg=N[4+Math.floor(Math.random()*(N.length-4))],ps=[a];let c=a;for(let k=0;k<4;k++){let b=null,bd=1e9;N.forEach(n=>{if(ps.includes(n))return;const d=Math.hypot(n.x-tg.x,n.y-tg.y)+Math.hypot(n.x-c.x,n.y-c.y)*.6;if(Math.hypot(n.x-c.x,n.y-c.y)<260&&d<bd){bd=d;b=n}});if(!b)break;ps.push(b);c=b}return{ps,t:0,blk:mode==='def'&&Math.random()<.8}}
+let vis=true;new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(cv);
+function fr(){requestAnimationFrame(fr);if(!vis)return;cx.clearRect(0,0,W,H);tt++;if(tt%170===1&&ev.length<3)ev.push(path());
+ N.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<W*.3||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.hypot(dx,dy);if(d<130){p.x+=dx/d;p.y+=dy/d}});
+ for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){const a=N[i],b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<150){const m=Math.hypot((a.x+b.x)/2-mouse.x,(a.y+b.y)/2-mouse.y)<160;cx.strokeStyle=m?`rgba(34,227,255,${(1-d/150)*.8})`:`rgba(80,110,255,${(1-d/150)*.3})`;cx.lineWidth=m?1.2:.7;cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke()}}
+ N.forEach((n,i)=>{cx.fillStyle=n.e?'#ff4d6d':i%6===0?'#8b5cf6':'#22e3ff';cx.beginPath();cx.arc(n.x,n.y,n.e?3.5:2,0,7);cx.fill()});
+ ev=ev.filter(e=>{e.t+=.012;const seg=Math.min(e.t*(e.ps.length-1),e.ps.length-1.001),i=Math.floor(seg),f=seg-i,a=e.ps[i],b=e.ps[i+1]||a;
+  cx.lineWidth=2.4;cx.strokeStyle='rgba(255,77,109,.85)';cx.shadowColor='#ff4d6d';cx.shadowBlur=14;cx.beginPath();cx.moveTo(e.ps[0].x,e.ps[0].y);for(let k=1;k<=i;k++)cx.lineTo(e.ps[k].x,e.ps[k].y);cx.lineTo(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);cx.stroke();cx.shadowBlur=0;
+  if(e.blk&&i>=2){const p=e.ps[2];cx.strokeStyle='rgba(34,227,255,'+Math.max(0,1.2-e.t)+')';cx.lineWidth=2;cx.beginPath();cx.arc(p.x,p.y,(e.t-.5)*140+10,0,7);cx.stroke();if(e.t>.62)return e.t<1.2&&(e.t+=.01,true)}
+  return e.t<1.1});}
+if(!rm)fr();
+})();
+</script></body></html>
